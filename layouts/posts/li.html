@@ -1,13 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hugo Post Card - Clickable</title>
-</head>
-<body>
-
-<!-- Hugo Template Code -->
 <li class="post-item">
   <article class="post-card" data-href="{{ .Params.externalLink | default .RelPermalink }}" 
            {{ if .Params.externalLink }}data-external="true"{{ end }}>
@@ -116,7 +106,7 @@
     transition: all 0.3s ease;
     border: 1px solid #e5e7eb;
     padding: 1.5rem;
-    cursor: pointer; /* Make it obvious the card is clickable */
+    cursor: pointer;
     position: relative;
   }
 
@@ -218,7 +208,6 @@
     align-items: center;
     gap: 0.375rem;
     transition: color 0.3s ease;
-    /* Prevent double-click on the link when card is clicked */
     pointer-events: none;
   }
 
@@ -387,12 +376,10 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Make entire post cards clickable
     const postCards = document.querySelectorAll('.post-card');
     
     postCards.forEach(card => {
         card.addEventListener('click', function(e) {
-            // Prevent the card click if user clicks on a tag or other interactive element
             if (e.target.classList.contains('tag') || e.target.closest('.tag')) {
                 e.stopPropagation();
                 return;
@@ -403,16 +390,13 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (url) {
                 if (isExternal) {
-                    // Open external links in new tab
                     window.open(url, '_blank', 'noopener,noreferrer');
                 } else {
-                    // Navigate to internal links in same tab
                     window.location.href = url;
                 }
             }
         });
         
-        // Add keyboard support for accessibility
         card.setAttribute('tabindex', '0');
         card.setAttribute('role', 'link');
         card.setAttribute('aria-label', 'Read post: ' + card.querySelector('.post-title').textContent.trim());
@@ -426,118 +410,3 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
-
-<!-- Demo content for testing -->
-<div style="padding: 2rem; font-family: system-ui, sans-serif;">
-    <h2>Hugo Post Cards - Now Fully Clickable!</h2>
-    <p>Click anywhere on a card to open the post. The entire card area is now clickable.</p>
-    
-    <!-- Example cards with demo data -->
-    <ul style="padding: 0; margin: 0;">
-        <li class="post-item">
-            <article class="post-card" data-href="/post/sample-post-1">
-                <div class="post-thumbnail">
-                    <img src="/api/placeholder/200/150" alt="Sample Post" loading="lazy">
-                    <span class="category-badge">Technology</span>
-                </div>
-                <div class="post-content">
-                    <div class="post-meta">
-                        <span class="post-date">
-                            <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                                <line x1="16" y1="2" x2="16" y2="6"></line>
-                                <line x1="8" y1="2" x2="8" y2="6"></line>
-                                <line x1="3" y1="10" x2="21" y2="10"></line>
-                            </svg>
-                            May 19, 2025
-                        </span>
-                        <span class="reading-time">
-                            <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <polyline points="12,6 12,12 16,14"></polyline>
-                            </svg>
-                            5 min read
-                        </span>
-                    </div>
-                    <h3 class="post-title">
-                        <a href="/post/sample-post-1" class="title-link">Getting Started with Hugo</a>
-                    </h3>
-                    <p class="post-summary">Learn how to build fast and modern websites with Hugo static site generator. This comprehensive guide covers everything from installation to deployment.</p>
-                    <div class="post-tags">
-                        <span class="tag">Hugo</span>
-                        <span class="tag">Static Site</span>
-                        <span class="tag">Web Development</span>
-                    </div>
-                    <div class="post-author">
-                        <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="12" cy="7" r="4"></circle>
-                        </svg>
-                        <span>John Doe</span>
-                    </div>
-                </div>
-            </article>
-        </li>
-        
-        <li class="post-item">
-            <article class="post-card" data-href="https://example.com/external-post" data-external="true">
-                <div class="post-thumbnail">
-                    <div class="post-placeholder">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                            <circle cx="9" cy="9" r="2"></circle>
-                            <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path>
-                        </svg>
-                    </div>
-                    <span class="category-badge">Tutorial</span>
-                </div>
-                <div class="post-content">
-                    <div class="post-meta">
-                        <span class="post-date">
-                            <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                                <line x1="16" y1="2" x2="16" y2="6"></line>
-                                <line x1="8" y1="2" x2="8" y2="6"></line>
-                                <line x1="3" y1="10" x2="21" y2="10"></line>
-                            </svg>
-                            May 18, 2025
-                        </span>
-                        <span class="reading-time">
-                            <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <polyline points="12,6 12,12 16,14"></polyline>
-                            </svg>
-                            3 min read
-                        </span>
-                    </div>
-                    <h3 class="post-title">
-                        <a href="https://example.com/external-post" class="title-link" target="_blank" rel="noopener noreferrer">
-                            External Link Example
-                            <svg class="external-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                                <polyline points="15,3 21,3 21,9"></polyline>
-                                <line x1="10" y1="14" x2="21" y2="3"></line>
-                            </svg>
-                        </a>
-                    </h3>
-                    <p class="post-summary">This post links to an external website and will open in a new tab when clicked.</p>
-                    <div class="post-tags">
-                        <span class="tag">External</span>
-                        <span class="tag">Link</span>
-                        <span class="tag-more">+2 more</span>
-                    </div>
-                    <div class="post-author">
-                        <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="12" cy="7" r="4"></circle>
-                        </svg>
-                        <span>Jane Smith</span>
-                    </div>
-                </div>
-            </article>
-        </li>
-    </ul>
-</div>
-
-</body>
-</html>
