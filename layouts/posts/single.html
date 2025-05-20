@@ -3,101 +3,183 @@
 {{ end }}
 
 {{ define "content" }}
-  <section class="container post" itemscope itemtype="https://schema.org/BlogPosting">
+  <section class="container post">
     <article class="post-article">
-      <!-- Sticky Header with Animation -->
-      <header class="post-header sticky-header" data-aos="fade-down">
-        <div class="post-title">
-          <h1 class="title" itemprop="headline">
-            <a class="title-link" href="{{ .Permalink | safeURL }}" aria-label="Permalink to {{ .Title }}">
-              {{ .Title }}
-            </a>
-          </h1>
-        </div>
-        <div class="post-meta" itemprop="author" itemscope itemtype="https://schema.org/Person">
-          <div class="date">
-            <span class="posted-on">
-              <i class="fa-solid fa-calendar" aria-hidden="true"></i>
-              <time datetime="{{ .Date.Format "2006-01-02T15:04:05Z07:00" }}" itemprop="datePublished">
-                {{ .Date | time.Format (.Site.Params.dateFormat | default "January 2, 2006" ) }}
-              </time>
-            </span>
-            <span class="reading-time">
-              <i class="fa-solid fa-clock" aria-hidden="true"></i>
-              {{ i18n "reading_time" .ReadingTime }}
-            </span>
-          </div>
-          {{ with .GetTerms "authors" }}
-            <div class="authors" itemprop="name">
-              {{ partial "taxonomy/authors.html" . }}
-            </div>
-          {{ end }}
-          {{ with .GetTerms "categories" }}
-            <div class="categories">
-              {{ partial "taxonomy/categories.html" . }}
-            </div>
-          {{ end }}
-          {{ with .GetTerms "tags" }}
-            <div class="tags">
-              {{ partial "taxonomy/tags.html" . }}
-            </div>
-          {{ end }}
-        </div>
-        <!-- Social Sharing Buttons -->
-        <div class="social-share" data-aos="fade-up">
-          <span>Share:</span>
-          <a href="https://twitter.com/intent/tweet?url={{ .Permalink | safeURL }}&text={{ .Title }}" target="_blank" aria-label="Share on Twitter" class="share-btn twitter">
-            <i class="fa-brands fa-twitter"></i>
-          </a>
-          <a href="https://www.linkedin.com/shareArticle?url={{ .Permalink | safeURL }}&title={{ .Title }}" target="_blank" aria-label="Share on LinkedIn" class="share-btn linkedin">
-            <i class="fa-brands fa-linkedin"></i>
-          </a>
-          <a href="mailto:?subject={{ .Title }}&body=Check out this article: {{ .Permalink | safeURL }}" aria-label="Share via Email" class="share-btn email">
-            <i class="fa-solid fa-envelope"></i>
-          </a>
-        </div>
-      </header>
-
-      <!-- Reading Progress Bar -->
-      <div class="reading-progress">
-        <div class="progress-bar" id="readingProgress"></div>
-      </div>
-
-      <!-- Featured Image with Lazy Loading and Animation -->
-      <div class="post-content" itemprop="articleBody" data-aos="fade-up">
-        {{ if .Params.featuredImage }}
-          <figure class="featured-image">
-            <img src="{{ .Params.featuredImage | relURL }}" alt="{{ .Title }} featured image" loading="lazy" class="img-fluid" />
-            <figcaption>{{ .Params.featuredImageCaption | default "Featured image" }}</figcaption>
-          </figure>
-        {{ end }}
-        {{ .Content }}
-      </div>
-
-      <!-- Interactive Footer -->
-      <footer class="post-footer">
-        <!-- Related Posts Section -->
-        {{ if .Site.Params.showRelatedPosts }}
-          <div class="related-posts" data-aos="fade-up">
-            <h2>Related Posts</h2>
-            <ul>
-              {{ range first 3 (where .Site.RegularPages.ByDate.Reverse "Section" .Section | complement . | first 3) }}
-                <li>
-                  <a href="{{ .Permalink }}" class="related-post-link">{{ .Title }}</a>
-                  <span class="related-post-date">{{ .Date.Format "Jan 2, 2006" }}</span>
-                </li>
+      <!-- Hero Section with Featured Image or Gradient -->
+      {{ if .Params.featuredImage }}
+        <div class="post-hero" style="background-image: linear-gradient(135deg, rgba(0,0,0,0.4), rgba(0,0,0,0.6)), url('{{ .Params.featuredImage | relURL }}');">
+      {{ else }}
+        <div class="post-hero post-hero-gradient">
+      {{ end }}
+        <div class="hero-content">
+          <div class="post-category-badge">
+            {{ with .GetTerms "categories" }}
+              {{ range first 1 . }}
+                <span class="category-tag">{{ .LinkTitle }}</span>
               {{ end }}
-            </ul>
+            {{ end }}
           </div>
-        {{ end }}
+          <header class="post-header">
+            <h1 class="post-title">
+              <a class="title-link" href="{{ .Permalink | safeURL }}">
+                {{ .Title }}
+              </a>
+            </h1>
+            
+            <div class="post-meta">
+              <div class="meta-group">
+                <div class="meta-item">
+                  <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                  </svg>
+                  <time datetime="{{ .Date.Format "2006-01-02T15:04:05Z07:00" }}">
+                    {{ .Date | time.Format (.Site.Params.dateFormat | default "January 2, 2006" ) }}
+                  </time>
+                </div>
+                
+                <div class="meta-item">
+                  <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12,6 12,12 16,14"></polyline>
+                  </svg>
+                  <span>{{ i18n "reading_time" .ReadingTime }}</span>
+                </div>
 
-        <!-- Comment Systems with Toggle -->
-        <div class="comments-section" data-aos="fade-up">
-          <h2>Comments</h2>
-          <div class="comment-toggle">
-            <button class="btn btn-primary" onclick="toggleComments()">Show Comments</button>
+                {{ with .GetTerms "authors" }}
+                  <div class="meta-item authors">
+                    <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                      <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    {{ partial "taxonomy/authors.html" . }}
+                  </div>
+                {{ end }}
+              </div>
+            </div>
+          </header>
+        </div>
+        
+        <!-- Scroll indicator -->
+        <div class="scroll-indicator">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6,9 12,15 18,9"></polyline>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Content Section -->
+      <div class="post-body">
+        <div class="content-wrapper">
+          <div class="post-content">
+            {{ .Content }}
           </div>
-          <div class="comment-systems" style="display: none;">
+
+          <!-- Sidebar with tags and related info -->
+          <aside class="post-sidebar">
+            <div class="sidebar-sticky">
+              {{ with .GetTerms "tags" }}
+                <div class="tags-section">
+                  <h3 class="sidebar-title">Tags</h3>
+                  <div class="tags-cloud">
+                    {{ range . }}
+                      <a href="{{ .Permalink }}" class="tag-pill">
+                        <span class="tag-text">{{ .LinkTitle }}</span>
+                      </a>
+                    {{ end }}
+                  </div>
+                </div>
+              {{ end }}
+
+              <!-- Share buttons -->
+              <div class="share-section">
+                <h3 class="sidebar-title">Share</h3>
+                <div class="share-buttons">
+                  <a href="#" class="share-btn share-twitter" data-share="twitter">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+                    </svg>
+                  </a>
+                  <a href="#" class="share-btn share-linkedin" data-share="linkedin">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                    </svg>
+                  </a>
+                  <a href="#" class="share-btn share-facebook" data-share="facebook">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                    </svg>
+                  </a>
+                </div>
+              </div>
+
+              <!-- Table of contents (if applicable) -->
+              <div class="toc-section">
+                <h3 class="sidebar-title">Contents</h3>
+                <nav class="table-of-contents">
+                  {{ .TableOfContents }}
+                </nav>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+
+      <!-- Post Footer -->
+      <footer class="post-footer">
+        <div class="post-footer-content">
+          <!-- Navigation between posts -->
+          <nav class="post-navigation">
+            {{ with .PrevInSection }}
+              <a href="{{ .Permalink }}" class="nav-link nav-prev">
+                <div class="nav-direction">← Previous</div>
+                <div class="nav-title">{{ .Title }}</div>
+              </a>
+            {{ end }}
+            
+            {{ with .NextInSection }}
+              <a href="{{ .Permalink }}" class="nav-link nav-next">
+                <div class="nav-direction">Next →</div>
+                <div class="nav-title">{{ .Title }}</div>
+              </a>
+            {{ end }}
+          </nav>
+
+          <!-- Author bio section -->
+          {{ with .GetTerms "authors" }}
+            {{ range first 1 . }}
+              <div class="author-bio">
+                <div class="author-avatar">
+                  {{ if .Params.avatar }}
+                    <img src="{{ .Params.avatar | relURL }}" alt="{{ .Title }}">
+                  {{ else }}
+                    <div class="avatar-placeholder">{{ substr .Title 0 1 | upper }}</div>
+                  {{ end }}
+                </div>
+                <div class="author-info">
+                  <h4 class="author-name">{{ .Title }}</h4>
+                  {{ with .Params.bio }}
+                    <p class="author-description">{{ . }}</p>
+                  {{ end }}
+                  {{ with .Params.social }}
+                    <div class="author-social">
+                      {{ range $platform, $url := . }}
+                        <a href="{{ $url }}" class="social-link" target="_blank" rel="noopener">
+                          {{ $platform }}
+                        </a>
+                      {{ end }}
+                    </div>
+                  {{ end }}
+                </div>
+              </div>
+            {{ end }}
+          {{ end }}
+
+          <!-- Comments sections -->
+          <div class="comments-wrapper">
+            {{ partial "posts/series.html" . }}
             {{ partial "posts/disqus.html" . }}
             {{ partial "posts/commento.html" . }}
             {{ partial "posts/utterances.html" . }}
@@ -107,87 +189,393 @@
             {{ partial "posts/cusdis.html" . }}
           </div>
         </div>
-
-        {{ partial "posts/series.html" . }}
       </footer>
     </article>
 
     {{ partial "posts/math.html" . }}
+
+    <!-- Reading progress indicator -->
+    <div class="reading-progress">
+      <div class="progress-bar"></div>
+    </div>
   </section>
 
-  <!-- CSS for Enhanced Styling -->
   <style>
+    /* Enhanced styling for the post template */
     .post-article {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      margin-bottom: 2rem;
+    }
+
+    .post-hero {
+      position: relative;
+      min-height: 60vh;
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      text-align: center;
+    }
+
+    .post-hero-gradient {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
       max-width: 800px;
-      margin: 0 auto;
-      padding: 2rem 1rem;
-      background: var(--bg-color, #fff);
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      padding: 2rem;
     }
 
-    .sticky-header {
-      position: sticky;
-      top: 0;
-      background: var(--header-bg, #f8f9fa);
-      z-index: 100;
-      padding: 1rem;
-      border-bottom: 1px solid #e9ecef;
-      transition: background 0.3s ease;
+    .post-category-badge {
+      margin-bottom: 1rem;
     }
 
-    .post-title .title {
-      font-size: 2.5rem;
-      color: var(--primary-color, #2c3e50);
-      margin-bottom: 0.5rem;
-      transition: color 0.3s ease;
+    .category-tag {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
-    .post-title .title-link:hover {
-      color: var(--accent-color, #007bff);
+    .post-title {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 1.5rem;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .title-link {
+      color: inherit;
       text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .title-link:hover {
+      opacity: 0.8;
+      transform: translateY(-2px);
     }
 
     .post-meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1rem;
-      font-size: 0.9rem;
-      color: var(--meta-color, #6c757d);
+      opacity: 0.9;
     }
 
-    .social-share {
-      margin-top: 1rem;
+    .meta-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      justify-content: center;
+    }
+
+    .meta-item {
       display: flex;
       align-items: center;
       gap: 0.5rem;
+      font-size: 0.875rem;
+    }
+
+    .meta-icon {
+      width: 18px;
+      height: 18px;
+      opacity: 0.8;
+    }
+
+    .scroll-indicator {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      animation: bounce 2s infinite;
+    }
+
+    .scroll-indicator svg {
+      width: 24px;
+      height: 24px;
+      opacity: 0.7;
+    }
+
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% {
+        transform: translateX(-50%) translateY(0);
+      }
+      40% {
+        transform: translateX(-50%) translateY(-10px);
+      }
+      60% {
+        transform: translateX(-50%) translateY(-5px);
+      }
+    }
+
+    .post-body {
+      position: relative;
+    }
+
+    .content-wrapper {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 3rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+    }
+
+    .post-content {
+      line-height: 1.8;
+      font-size: 1.125rem;
+      color: #374151;
+    }
+
+    .post-content h2,
+    .post-content h3,
+    .post-content h4 {
+      color: #1f2937;
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+
+    .post-content p {
+      margin-bottom: 1.5rem;
+    }
+
+    .post-content img {
+      border-radius: 8px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      margin: 2rem 0;
+    }
+
+    .post-sidebar {
+      position: relative;
+    }
+
+    .sidebar-sticky {
+      position: sticky;
+      top: 2rem;
+      background: #f9fafb;
+      border-radius: 12px;
+      padding: 1.5rem;
+      border: 1px solid #e5e7eb;
+    }
+
+    .sidebar-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid #e5e7eb;
+    }
+
+    .tags-cloud {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .tag-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.375rem 0.75rem;
+      background: white;
+      border: 1px solid #d1d5db;
+      border-radius: 20px;
+      text-decoration: none;
+      font-size: 0.875rem;
+      color: #6b7280;
+      transition: all 0.2s ease;
+    }
+
+    .tag-pill:hover {
+      background: #3b82f6;
+      color: white;
+      border-color: #3b82f6;
+      transform: translateY(-1px);
+    }
+
+    .share-buttons {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
     }
 
     .share-btn {
-      display: inline-flex;
+      display: flex;
       align-items: center;
       justify-content: center;
       width: 40px;
       height: 40px;
-      border-radius: 50%;
-      color: #fff;
-      transition: transform 0.2s ease;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .share-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .share-twitter {
+      background: #1da1f2;
+      color: white;
+    }
+
+    .share-linkedin {
+      background: #0077b5;
+      color: white;
+    }
+
+    .share-facebook {
+      background: #1877f2;
+      color: white;
     }
 
     .share-btn:hover {
-      transform: scale(1.1);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
 
-    .share-btn.twitter {
-      background: #1da1f2;
+    .table-of-contents {
+      font-size: 0.875rem;
     }
 
-    .share-btn.linkedin {
-      background: #0077b5;
+    .table-of-contents ul {
+      list-style: none;
+      padding-left: 0;
     }
 
-    .share-btn.email {
-      background: #6c757d;
+    .table-of-contents li {
+      padding: 0.25rem 0;
+    }
+
+    .table-of-contents a {
+      color: #6b7280;
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .table-of-contents a:hover {
+      color: #3b82f6;
+    }
+
+    .post-footer {
+      background: #f9fafb;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .post-footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+    }
+
+    .post-navigation {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .nav-link {
+      display: block;
+      padding: 1.5rem;
+      background: white;
+      border-radius: 12px;
+      text-decoration: none;
+      color: #374151;
+      border: 1px solid #e5e7eb;
+      transition: all 0.2s ease;
+    }
+
+    .nav-link:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .nav-direction {
+      font-size: 0.875rem;
+      color: #6b7280;
+      margin-bottom: 0.5rem;
+    }
+
+    .nav-title {
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    .nav-next {
+      text-align: right;
+    }
+
+    .author-bio {
+      display: flex;
+      gap: 1rem;
+      padding: 2rem;
+      background: white;
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      margin-bottom: 2rem;
+    }
+
+    .author-avatar {
+      flex-shrink: 0;
+    }
+
+    .author-avatar img,
+    .avatar-placeholder {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+    }
+
+    .avatar-placeholder {
+      background: #3b82f6;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 1.5rem;
+    }
+
+    .author-name {
+      margin-bottom: 0.5rem;
+      color: #1f2937;
+    }
+
+    .author-description {
+      color: #6b7280;
+      margin-bottom: 1rem;
+      line-height: 1.6;
+    }
+
+    .author-social {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .social-link {
+      color: #3b82f6;
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    .social-link:hover {
+      text-decoration: underline;
     }
 
     .reading-progress {
@@ -195,125 +583,122 @@
       top: 0;
       left: 0;
       width: 100%;
-      height: 4px;
-      background: #e9ecef;
+      height: 3px;
+      background: rgba(0, 0, 0, 0.1);
       z-index: 1000;
     }
 
     .progress-bar {
-      width: 0;
       height: 100%;
-      background: var(--accent-color, #007bff);
-      transition: width 0.2s ease;
+      background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+      width: 0%;
+      transition: width 0.1s ease;
     }
 
-    .featured-image img {
-      width: 100%;
-      height: auto;
-      border-radius: 8px;
-      margin-bottom: 1rem;
-      transition: transform 0.3s ease;
-    }
+    /* Responsive design */
+    @media (max-width: 1024px) {
+      .content-wrapper {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
 
-    .featured-image img:hover {
-      transform: scale(1.02);
-    }
-
-    .post-content {
-      line-height: 1.8;
-      font-size: 1.1rem;
-      color: var(--text-color, #333);
-    }
-
-    .related-posts h2 {
-      font-size: 1.5rem;
-      margin-bottom: 1rem;
-    }
-
-    .related-posts ul {
-      list-style: none;
-      padding: 0;
-    }
-
-    .related-posts li {
-      margin-bottom: 0.5rem;
-    }
-
-    .related-post-link {
-      color: var(--primary-color, #2c3e50);
-      text-decoration: none;
-    }
-
-    .related-post-link:hover {
-      color: var(--accent-color, #007bff);
-    }
-
-    .related-post-date {
-      font-size: 0.85rem;
-      color: var(--meta-color, #6c757d);
-      margin-left: 0.5rem;
-    }
-
-    .comments-section {
-      margin-top: 2rem;
-    }
-
-    .comment-toggle {
-      margin-bottom: 1rem;
-    }
-
-    .btn-primary {
-      background: var(--accent-color, #007bff);
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 5px;
-      color: #fff;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-
-    .btn-primary:hover {
-      background: var(--accent-hover, #0056b3);
+      .sidebar-sticky {
+        position: static;
+      }
     }
 
     @media (max-width: 768px) {
-      .post-title .title {
-        font-size: 1.8rem;
+      .post-hero {
+        min-height: 50vh;
       }
 
-      .post-article {
+      .hero-content {
+        padding: 1rem;
+      }
+
+      .meta-group {
+        justify-content: flex-start;
+        gap: 1rem;
+      }
+
+      .content-wrapper {
+        padding: 2rem 1rem;
+      }
+
+      .post-navigation {
+        grid-template-columns: 1fr;
+      }
+
+      .nav-next {
+        text-align: left;
+      }
+
+      .author-bio {
         padding: 1rem;
       }
     }
   </style>
 
-  <!-- JavaScript for Interactivity -->
   <script>
-    // Reading Progress Bar
-    window.addEventListener('scroll', () => {
-      const winScroll = document.documentElement.scrollTop || document.body.scrollTop;
-      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-      const scrolled = (winScroll / height) * 100;
-      document.getElementById('readingProgress').style.width = scrolled + '%';
+    // Reading progress indicator
+    window.addEventListener('scroll', function() {
+      const progressBar = document.querySelector('.progress-bar');
+      const article = document.querySelector('.post-article');
+      
+      if (progressBar && article) {
+        const articleTop = article.offsetTop;
+        const articleHeight = article.offsetHeight;
+        const windowHeight = window.innerHeight;
+        const scrollY = window.scrollY;
+        
+        const progress = Math.min(
+          Math.max((scrollY - articleTop + windowHeight) / articleHeight, 0),
+          1
+        );
+        
+        progressBar.style.width = `${progress * 100}%`;
+      }
     });
 
-    // Toggle Comments Section
-    function toggleComments() {
-      const commentSection = document.querySelector('.comment-systems');
-      const button = document.querySelector('.comment-toggle button');
-      if (commentSection.style.display === 'none') {
-        commentSection.style.display = 'block';
-        button.textContent = 'Hide Comments';
-      } else {
-        commentSection.style.display = 'none';
-        button.textContent = 'Show Comments';
-      }
-    }
+    // Share functionality
+    document.querySelectorAll('[data-share]').forEach(button => {
+      button.addEventListener('click', function(e) {
+        e.preventDefault();
+        const platform = this.dataset.share;
+        const url = encodeURIComponent(window.location.href);
+        const title = encodeURIComponent(document.title);
+        
+        let shareUrl;
+        switch (platform) {
+          case 'twitter':
+            shareUrl = `https://twitter.com/intent/tweet?url=${url}&text=${title}`;
+            break;
+          case 'linkedin':
+            shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${url}`;
+            break;
+          case 'facebook':
+            shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+            break;
+        }
+        
+        if (shareUrl) {
+          window.open(shareUrl, '_blank', 'width=600,height=400');
+        }
+      });
+    });
 
-    // Initialize AOS (Animate on Scroll)
-    AOS.init({
-      duration: 800,
-      once: true,
+    // Smooth scrolling for table of contents
+    document.querySelectorAll('.table-of-contents a').forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
     });
   </script>
 {{ end }}
