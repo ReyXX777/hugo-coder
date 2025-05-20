@@ -33,11 +33,11 @@
 }
 
 .avatar-container img {
-    height: 100%;
-    width: auto;                     /* scale width proportionally */
-    display: block;
-    object-fit: cover;
-}
+        width: 220%;              /* Zoom in by scaling width beyond container */
+        height: 220%;             /* Zoom in height too */
+        object-fit: cover;        /* Ensure image still covers area cleanly */
+        display: block;
+    }
 
 
         /* Basic body styling for centering (optional, depends on your layout) */
