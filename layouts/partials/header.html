@@ -1,11 +1,11 @@
 <nav class="navigation">
   <section class="container">
     {{ with .Site }}
-    <a class="navigation-title" href="{{ absLangURL "" }}">
-      {{ .Title }}
-    </a>
+      <a class="navigation-title" href="{{ absLangURL "" }}">
+        {{ .Title }}
+      </a>
     {{ end }}
-    {{ if or .Site.Menus.main .Site.IsMultiLingual }}
+    {{ if or .Site.Menus.main .Site.IsMultilingual }} <!-- fixed spelling here -->
       <input type="checkbox" id="menu-toggle" />
       <label class="menu-button float-right" for="menu-toggle">
         <i class="fa-solid fa-bars fa-fw" aria-hidden="true"></i>
@@ -14,11 +14,13 @@
         {{ with .Site.Menus.main }}
           {{ range sort . }}
             <li class="navigation-item">
-              <a class="navigation-link {{ .Params.class }}" href="{{ index (apply (slice .URL) (.Params.urlFunc | default "relLangURL") ".") 0 }}">{{ .Name }}</a>
+              <a class="navigation-link {{ .Params.class }}" href="{{ index (apply (slice .URL) (.Params.urlFunc | default "relLangURL") ".") 0 }}">
+                {{ .Name }}
+              </a>
             </li>
           {{ end }}
         {{ end }}
-        {{ if .Site.IsMultiLingual }}
+        {{ if .Site.IsMultilingual }} <!-- fixed spelling here -->
           {{ $node := . }}
           {{ $separator := true }}
           {{ range (default .Site.Home.AllTranslations .Translations) }}
