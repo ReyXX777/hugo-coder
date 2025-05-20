@@ -1,8 +1,68 @@
-{{ if and (isset .Site.Params "avatarurl") (not (isset .Site.Params "gravatar")) }}
-  {{ with .Site.Params.avatarURL }}
-    <div class="avatar"><img src="{{ . | relURL }}" alt="avatar"></div>
-  {{ end }}
-{{ end }}
-{{ with .Site.Params.gravatar }}
-  <div class="avatar"><img src="https://www.gravatar.com/avatar/{{md5 .}}?s=240&d=mp" alt="gravatar"></div>
-{{ end }}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animated Avatar</title>
+    <style>
+        /* Define the animation keyframes for fading in and scaling up */
+        @keyframes fadeInScale {
+            from {
+                opacity: 0; /* Start completely transparent */
+                transform: scale(0.8); /* Start slightly smaller */
+            }
+            to {
+                opacity: 1; /* End fully visible */
+                transform: scale(1); /* End at original size */
+            }
+        }
+
+        /* Style the avatar container and apply the animation */
+        .avatar-container {
+    width: 190px;
+    height: 190px;
+    display: flex;                    /* use flex for centering */
+    justify-content: center;
+    align-items: center;
+    margin: 20px auto;
+    overflow: hidden;                /* crop image to the container */
+    border-radius: 50%;              /* make container round */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    animation: fadeInScale 1s ease-out forwards;
+}
+
+.avatar-container img {
+    height: 100%;
+    width: auto;                     /* scale width proportionally */
+    display: block;
+    object-fit: cover;
+}
+
+
+        /* Basic body styling for centering (optional, depends on your layout) */
+        body {
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 50vh; /* Use 50vh so it doesn't push previous content too far down */
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    {{ if and (isset .Site.Params "avatarurl") (not (isset .Site.Params "gravatar")) }}
+      {{ with .Site.Params.avatarURL }}
+        <div class="avatar-container"><img src="/images/myphoto.png" alt="avatar"></div>
+      {{ end }}
+    {{ end }}
+    {{ with .Site.Params.gravatar }}
+      <div class="avatar-container"><img src="https://www.gravatar.com/avatar/{{md5 .}}?s=240&d=mp" alt="gravatar"></div>
+    {{ end }}
+
+</body>
+</html>
