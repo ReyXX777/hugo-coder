@@ -1,22 +1,244 @@
 {{ define "title" }}
   {{ title (i18n (lower .Title)) | default .Title }} · {{ .Site.Title }}
 {{ end }}
+
 {{ define "content" }}
-  <section class="container list">
-    <header>
-      <h1 class="title">
-        <a class="title-link" href="{{ .Permalink | safeURL }}">
+  <section class="container list" itemscope itemtype="https://schema.org/Blog">
+    <!-- Sticky Header with Search and Filters -->
+    <header class="list-header sticky-header" data-aos="fade-down">
+      <h1 class="title" itemprop="name">
+        <a class="title-link" href="{{ .Permalink | safeURL }}" aria-label="Permalink to {{ .Title }}">
           {{ title (i18n (lower .Title)) | default .Title }}
         </a>
       </h1>
+      <!-- Search Bar -->
+      <div class="search-bar" data-aos="fade-up">
+        <input type="text" id="searchInput" placeholder="Search posts..." aria-label="Search posts" />
+        <button class="btn btn-search" aria-label="Search">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+      </div>
+      <!-- Category Filters -->
+      <div class="category-filters" data-aos="fade-up">
+        <span>Filter by Category:</span>
+        {{ with .Site.Taxonomies.categories }}
+          <ul class="filter-list">
+            <li><button class="filter-btn active" data-filter="all">All</button></li>
+            {{ range $name, $taxonomy := . }}
+              <li><button class="filter-btn" data-filter="{{ $name | urlize }}">{{ $name }}</button></li>
+            {{ end }}
+          </ul>
+        {{ end }}
+      </div>
     </header>
-    {{ .Content }}
-    <ul>
+
+    <!-- Main Content -->
+    <div class="list-content" itemprop="description">
+      {{ .Content }}
+    </div>
+
+    <!-- Post List as Grid -->
+    <ul class="post-grid" id="postList">
       {{- range .Paginator.Pages -}}
-        {{- .Render "li" -}}
+        <li class="post-item" data-categories="{{ range .Params.categories }}{{ . | urlize }} {{ end }}" itemscope itemtype="https://schema.org/BlogPosting" data-aos="fade-up">
+          {{- .Render "li" -}}
+          <div class="post-preview">
+            {{ if .Params.featuredImage }}
+              <img src="{{ .Params.featuredImage | relURL }}" alt="{{ .Title }} featured image" loading="lazy" class="preview-image" />
+            {{ end }}
+            <div class="preview-meta">
+              <time datetime="{{ .Date.Format "2006-01-02T15:04:05Z07:00" }}" itemprop="datePublished">
+                {{ .Date | time.Format (.Site.Params.dateFormat | default "January 2, 2006" ) }}
+              </time>
+              <span class="reading-time">
+                <i class="fa-solid fa-clock" aria-hidden="true"></i>
+                {{ i18n "reading_time" .ReadingTime }}
+              </span>
+            </div>
+          </div>
+        </li>
       {{- end -}}
     </ul>
 
-    {{ partial "pagination.html" . }}
+    <!-- Pagination -->
+    <div class="pagination-wrapper" data-aos="fade-up">
+      {{ partial "pagination.html" . }}
+    </div>
+
+    <!-- CSS for Enhanced Styling -->
+    <style>
+      .list {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+      }
+
+      .sticky-header {
+        position: sticky;
+        top: 0;
+        background: var(--header-bg, #f8f9fa);
+        z-index: 100;
+        padding: 1rem;
+        border-bottom: 1px solid #e9ecef;
+        transition: background 0.3s ease;
+      }
+
+      .title {
+        font-size: 2.5rem;
+        color: var(--primary-color, #2c3e50);
+        margin-bottom: 1rem;
+      }
+
+      .title-link:hover {
+        color: var(--accent-color, #007bff);
+        text-decoration: none;
+      }
+
+      .search-bar {
+        display: flex;
+        align-items: center;
+        gap:0rem;
+        margin-bottom: 1rem;
+      }
+
+      .search-bar input {
+        padding: 0.5rem;
+        border: 1px solid #e9ecef;
+        border-radius: 5px 0 0 5px;
+        width: 100%;
+        max-width: 300px;
+        font-size: 1rem;
+      }
+
+      .btn-search {
+        padding: 0.5rem 1rem;
+        border: 1px solid #e9ecef;
+        border-left: none;
+        border-radius: 0 5px 5px 0;
+        background: var(--accent-color, #007bff);
+        color: #fff;
+        cursor: pointer;
+        transition: background 0.3s ease;
+      }
+
+      .btn-search:hover {
+        background: var(--accent-hover, #0056b3);
+      }
+
+      .category-filters {
+        margin-bottom: 1rem;
+      }
+
+      .filter-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        list-style: none;
+        padding: 0;
+      }
+
+      .filter-btn {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 5px;
+        background: #e9ecef;
+        color: var(--text-color, #333);
+        cursor: pointer;
+        transition: background 0.3s ease, color 0.3s ease;
+      }
+
+      .filter-btn.active,
+      .filter-btn:hover {
+        background: var(--accent-color, #007bff);
+        color: #fff;
+      }
+
+      .post-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        list-style: none;
+        padding: 0;
+      }
+
+      .post-item {
+        background: var(--bg-color, #fff);
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        transition: transform 0.3s ease;
+      }
+
+      .post-item:hover {
+        transform: translateY(-5px);
+      }
+
+      .preview-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        border-bottom: 1px solid #e9ecef;
+      }
+
+      .preview-meta {
+        padding: 1rem;
+        font-size: 0.9rem;
+        color: var(--meta-color, #6c757d);
+      }
+
+      .pagination-wrapper {
+        margin-top: 2rem;
+        text-align: center;
+      }
+
+      @media (max-width: 768px) {
+        .title {
+          font-size: 1.8rem;
+        }
+
+        .post-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .search-bar input {
+          max-width: 100%;
+        }
+      }
+    </style>
+
+    <!-- JavaScript for Interactivity -->
+    <script>
+      // Search Functionality
+      document.getElementById('searchInput').addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        const posts = document.querySelectorAll('.post-item');
+        posts.forEach(post => {
+          const title = post.querySelector('a').textContent.toLowerCase();
+          post.style.display = title.includes(searchTerm) ? '' : 'none';
+        });
+      });
+
+      // Category Filter Functionality
+      document.querySelectorAll('.filter-btn').forEach(button => {
+        button.addEventListener('click', function() {
+          const filter = this.getAttribute('data-filter');
+          const posts = document.querySelectorAll('.post-item');
+
+          document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+          this.classList.add('active');
+
+          posts.forEach(post => {
+            const categories = post.getAttribute('data-categories').split(' ');
+            post.style.display = filter === 'all' || categories.includes(filter) ? '' : 'none';
+          });
+        });
+      });
+
+      // Initialize AOS (Animate on Scroll)
+      AOS.init({
+        duration: 800,
+        once: true,
+      });
+    </script>
   </section>
 {{ end }}
